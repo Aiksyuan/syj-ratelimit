@@ -31,7 +31,11 @@ import org.springframework.scripting.support.ResourceScriptSource;
 @ComponentScan(basePackages="cn.org.zhixiang")
 public class EnableSyjRateLimitConfiguration {
 
-
+    /**
+     * 注入redis模板类
+     * @param connectionFactory
+     * @return
+     */
     @Bean
     @ConditionalOnMissingBean(name = "redisTemplate")
     public RedisTemplate<Object, Object> redisTemplate(RedisConnectionFactory connectionFactory) {
@@ -42,6 +46,10 @@ public class EnableSyjRateLimitConfiguration {
         return template;
     }
 
+    /**
+     * 注入单个ip访问限制
+     * @return
+     */
     @Bean(name = "rateLimiter")
     @ConditionalOnProperty(prefix = Const.PREFIX, name = "algorithm", havingValue = "token")
     public RateLimiter tokenRateLimiter() {
@@ -51,6 +59,10 @@ public class EnableSyjRateLimitConfiguration {
         return new RedisRateLimiterTokenBucketImpl(consumeRedisScript);
     }
 
+    /**
+     * 注入单个接口的访问限制
+     * @return
+     */
     @Bean(name = "rateLimiter")
     @ConditionalOnProperty(prefix = Const.PREFIX, name = "algorithm", havingValue = "counter", matchIfMissing = true)
     public RateLimiter counterRateLimiter() {
